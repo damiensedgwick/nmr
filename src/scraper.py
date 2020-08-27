@@ -16,7 +16,7 @@ base_url = "https://www.rightmove.co.uk/property-to-rent/find.html?locationIdent
 
 page_number = soup.find("span", { "class": "searchHeader-resultCount" }).text
 
-for page in range(0, int(page_number), 24):
+for page in range(0, int(page_number) - 25, 24):
     request = requests.get(base_url + str(page))
     content = request.content
     soup = BeautifulSoup(content, "html.parser")
@@ -27,29 +27,40 @@ for page in range(0, int(page_number), 24):
         data = {}
 
         try:
-            data["Property Type"] = item.find("h2", { "class": "propertyCard-title" }).text.replace("\n", "")
+            data["Property Type"] = item.find("h2", { "class": "propertyCard-title" }).text.replace("\n", "").replace("            ", "")
+            print('--------')
+            print(item.find("h2", { "class": "propertyCard-title" }).text.replace("\n", "").replace("            ", ""))
         except:
             data["Property Type"] = None
+            print(None)
 
         try:
             data["Property Address"] = item.find("address", { "class": "propertyCard-address" }).text.replace("\n", "")
+            print(item.find("address", { "class": "propertyCard-address" }).text.replace("\n", ""))
         except:
             data["Property Address"] = None
+            print(None)
 
         try:
             data["Rental Cost"] = item.find("span", { "class": "propertyCard-priceValue" }).text.replace("\n", "").replace(" ", "")
+            print(item.find("span", { "class": "propertyCard-priceValue" }).text.replace("\n", "").replace(" ", ""))
         except:
             data["Rental Cost"] = None
+            print(None)
 
         try:
             data["Listing Details"] = item.find("div", { "class": "propertyCard-branchSummary" }).text.replace("\n", "")
+            print(item.find("div", { "class": "propertyCard-branchSummary" }).text.replace("\n", ""))
         except:
             data["Listing Details"] = None
+            print(None)
 
         try:
             data["Contact Number"] = item.find("a", { "class": "propertyCard-contactsPhoneNumber" }).text
+            print(item.find("a", { "class": "propertyCard-contactsPhoneNumber" }).text)
         except:
             data["Contact Number"] = None
+            print(None)
 
         property_data.append(data)
 
