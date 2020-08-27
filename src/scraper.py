@@ -22,8 +22,27 @@ for property in all_properties:
     property_contact = property.find("a", { "class": "propertyCard-contactsPhoneNumber" }).text
 
     print("---")
-    print(property_bedrooms)
-    print(property_address)
-    print(property_price)
-    print(property_listed_by)
-    print(property_contact)
+    try:
+        print(property_bedrooms)
+    except:
+        print("Field Empty")
+
+    try:
+        print(property_address)
+    except:
+        print("Field Empty")
+
+    try:
+        print(property_price)
+    except:
+        print("Field Empty")
+
+    try:
+        print(property_listed_by)
+    except:
+        print("Field Empty")
+
+    try:
+        print(property_contact)
+    except:
+        print("Field Empty")
