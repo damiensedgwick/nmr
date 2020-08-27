@@ -1,11 +1,9 @@
 FROM python:3.8
 
-ADD src/scraper.py /
-
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY src/ .
+COPY src/scraper.py /
 
 CMD [ "python", "./scraper.py" ]

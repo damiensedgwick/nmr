@@ -2,7 +2,7 @@
 
 `cd nmr`
 
-`docker build -t rightmove_scraper . && docker run rightmove_scraper`
+`docker build -t rightmove_scraper . && docker run -v "$PWD"/data:/data rightmove_scraper`
 
 ### Example Output
 

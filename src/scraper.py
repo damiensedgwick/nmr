@@ -1,4 +1,5 @@
 import requests
+import pandas
 from bs4 import BeautifulSoup
 
 request = requests.get("https://www.rightmove.co.uk/property-to-rent/find.html?searchType=RENT&locationIdentifier=REGION%5E1018&insId=1&radius=0.0&minPrice=&maxPrice=&minBedrooms=&maxBedrooms=&displayPropertyType=&maxDaysSinceAdded=&sortByPriceDescending=&_includeLetAgreed=on&primaryDisplayPropertyType=&secondaryDisplayPropertyType=&oldDisplayPropertyType=&oldPrimaryDisplayPropertyType=&letType=&letFurnishType=&houseFlatShare=", headers={'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'})
@@ -7,42 +8,42 @@ content = request.content
 
 soup = BeautifulSoup(content, "html.parser")
 
-# print(soup.prettify)
-
-# Address, Bedroom number, Property info and Price
-
 all_properties = soup.find_all("div", { "class": "propertyCard" })
 
-for property in all_properties:
+property_data = []
 
-    property_bedrooms = property.find("h2", { "class": "propertyCard-title" }).text.replace(" ", "", 12)
-    property_address = property.find("address", { "class": "propertyCard-address" }).text.replace("\n", "")
-    property_price = property.find("span", { "class": "propertyCard-priceValue" }).text.replace("\n", "").replace(" ", "")
-    property_listed_by = property.find("div", { "class": "propertyCard-branchSummary" }).text.replace("\n", "")
-    property_contact = property.find("a", { "class": "propertyCard-contactsPhoneNumber" }).text
+for item in all_properties:
 
-    print("---")
-    try:
-        print(property_bedrooms)
-    except:
-        print("Field Empty")
+    data = {}
 
     try:
-        print(property_address)
+        data["Property Type"] = item.find("h2", { "class": "propertyCard-title" }).text.replace("\n", "")
     except:
-        print("Field Empty")
+        data["Property Type"] = None
 
     try:
-        print(property_price)
+        data["Property Address"] = item.find("address", { "class": "propertyCard-address" }).text.replace("\n", "")
     except:
-        print("Field Empty")
+        data["Property Address"] = None
 
     try:
-        print(property_listed_by)
+        data["Rental Cost"] = item.find("span", { "class": "propertyCard-priceValue" }).text.replace("\n", "").replace(" ", "")
     except:
-        print("Field Empty")
+        data["Rental Cost"] = None
 
     try:
-        print(property_contact)
+        data["Listing Details"] = item.find("div", { "class": "propertyCard-branchSummary" }).text.replace("\n", "")
     except:
-        print("Field Empty")
+        data["Listing Details"] = None
+
+    try:
+        data["Contact Number"] = item.find("a", { "class": "propertyCard-contactsPhoneNumber" }).text
+    except:
+        data["Contact Number"] = None
+
+    property_data.append(data)
+    
+
+data_frame = pandas.DataFrame(property_data)
+
+data_frame.to_csv('data/properties.csv')
