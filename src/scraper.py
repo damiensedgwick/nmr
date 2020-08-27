@@ -12,37 +12,46 @@ all_properties = soup.find_all("div", { "class": "propertyCard" })
 
 property_data = []
 
-for item in all_properties:
+base_url = "https://www.rightmove.co.uk/property-to-rent/find.html?locationIdentifier=REGION%5E1018&propertyTypes=&includeLetAgreed=false&mustHave=&dontShow=&furnishTypes=&keywords=&index="
 
-    data = {}
+page_number = soup.find("span", { "class": "searchHeader-resultCount" }).text
 
-    try:
-        data["Property Type"] = item.find("h2", { "class": "propertyCard-title" }).text.replace("\n", "")
-    except:
-        data["Property Type"] = None
+for page in range(0, int(page_number), 24):
+    request = requests.get(base_url + str(page))
+    content = request.content
+    soup = BeautifulSoup(content, "html.parser")
+    all_properties = soup.find_all("div", { "class": "propertyCard" })
 
-    try:
-        data["Property Address"] = item.find("address", { "class": "propertyCard-address" }).text.replace("\n", "")
-    except:
-        data["Property Address"] = None
+    for item in all_properties:
 
-    try:
-        data["Rental Cost"] = item.find("span", { "class": "propertyCard-priceValue" }).text.replace("\n", "").replace(" ", "")
-    except:
-        data["Rental Cost"] = None
+        data = {}
 
-    try:
-        data["Listing Details"] = item.find("div", { "class": "propertyCard-branchSummary" }).text.replace("\n", "")
-    except:
-        data["Listing Details"] = None
+        try:
+            data["Property Type"] = item.find("h2", { "class": "propertyCard-title" }).text.replace("\n", "")
+        except:
+            data["Property Type"] = None
 
-    try:
-        data["Contact Number"] = item.find("a", { "class": "propertyCard-contactsPhoneNumber" }).text
-    except:
-        data["Contact Number"] = None
+        try:
+            data["Property Address"] = item.find("address", { "class": "propertyCard-address" }).text.replace("\n", "")
+        except:
+            data["Property Address"] = None
 
-    property_data.append(data)
-    
+        try:
+            data["Rental Cost"] = item.find("span", { "class": "propertyCard-priceValue" }).text.replace("\n", "").replace(" ", "")
+        except:
+            data["Rental Cost"] = None
+
+        try:
+            data["Listing Details"] = item.find("div", { "class": "propertyCard-branchSummary" }).text.replace("\n", "")
+        except:
+            data["Listing Details"] = None
+
+        try:
+            data["Contact Number"] = item.find("a", { "class": "propertyCard-contactsPhoneNumber" }).text
+        except:
+            data["Contact Number"] = None
+
+        property_data.append(data)
 
 data_frame = pandas.DataFrame(property_data)
 
