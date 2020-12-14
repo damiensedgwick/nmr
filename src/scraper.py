@@ -1,6 +1,9 @@
 import requests
 import pandas
+import pathlib
+
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 request = requests.get("https://www.rightmove.co.uk/property-to-rent/find.html?searchType=RENT&locationIdentifier=REGION%5E1018&insId=1&radius=0.0&minPrice=&maxPrice=&minBedrooms=&maxBedrooms=&displayPropertyType=&maxDaysSinceAdded=&sortByPriceDescending=&_includeLetAgreed=on&primaryDisplayPropertyType=&secondaryDisplayPropertyType=&oldDisplayPropertyType=&oldPrimaryDisplayPropertyType=&letType=&letFurnishType=&houseFlatShare=", headers={'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'})
 
@@ -66,4 +69,7 @@ for page in range(0, int(page_number) - 25, 24):
 
 data_frame = pandas.DataFrame(property_data)
 
-data_frame.to_csv('data/properties.csv')
+scan_date = datetime.today().strftime('%Y-%m-%d')
+scan_time = datetime.today().strftime('%H:%M:%S')
+
+data_frame.to_csv(F'data/{scan_date}_{scan_time}.csv')
